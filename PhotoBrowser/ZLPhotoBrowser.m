@@ -11,7 +11,6 @@
 #import "ZLPhotoTool.h"
 #import "ZLThumbnailViewController.h"
 #import "ZLDefine.h"
-#import "UITableView+Placeholder.h"
 
 @interface ZLPhotoBrowser ()
 {
@@ -58,9 +57,6 @@
 #pragma mark - 直接push到所有照片界面
 - (void)pushAllPhotoSoon
 {
-    if (_arrayDataSources.count == 0) {
-        return;
-    }
     NSInteger i = 0;
     for (ZLPhotoAblumList *ablum in _arrayDataSources) {
         if (ablum.assetCollection.assetCollectionSubtype == 209) {
@@ -88,12 +84,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [tableView placeholderBaseOnNumber:_arrayDataSources.count iconConfig:^(UIImageView *imageView) {
-        imageView.image = [UIImage imageNamed:kZLPhotoBrowserSrcName(@"defaultphoto.png")]?:[UIImage imageNamed:kZLPhotoBrowserFrameworkSrcName(@"defaultphoto.png")];
-    } textConfig:^(UILabel *label) {
-        label.text = @"无照片";
-        label.textColor = [UIColor darkGrayColor];
-    }];
     return _arrayDataSources.count;
 }
 

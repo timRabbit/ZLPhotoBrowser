@@ -18,8 +18,6 @@
 #import "ToastUtils.h"
 #import <objc/runtime.h>
 
-#define kBaseViewHeight (self.maxPreviewCount ? 300 : 142)
-
 double const ScalePhotoWidth = 1000;
 
 typedef void (^handler)(NSArray<UIImage *> *selectPhotos, NSArray<ZLSelectPhotoModel *> *selectPhotoModels);
@@ -31,8 +29,6 @@ typedef void (^handler)(NSArray<UIImage *> *selectPhotos, NSArray<ZLSelectPhotoM
 @property (weak, nonatomic) IBOutlet UIButton *btnCancel;
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *verColHeight;
-
 
 @property (nonatomic, assign) BOOL animate;
 @property (nonatomic, assign) BOOL preview;
@@ -42,7 +38,6 @@ typedef void (^handler)(NSArray<UIImage *> *selectPhotos, NSArray<ZLSelectPhotoM
 @property (nonatomic, copy)   handler handler;
 @property (nonatomic, assign) UIStatusBarStyle previousStatusBarStyle;
 @property (nonatomic, assign) BOOL senderTabBarIsShow;
-@property (nonatomic, strong) UILabel *placeholderLabel;
 
 @end
 
@@ -51,21 +46,6 @@ typedef void (^handler)(NSArray<UIImage *> *selectPhotos, NSArray<ZLSelectPhotoM
 - (void)dealloc
 {
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
-}
-
-- (UILabel *)placeholderLabel
-{
-    if (!_placeholderLabel) {
-        _placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kViewWidth, 100)];
-        _placeholderLabel.text = @"暂无照片";
-        _placeholderLabel.textAlignment = NSTextAlignmentCenter;
-        _placeholderLabel.textColor = [UIColor darkGrayColor];
-        _placeholderLabel.font = [UIFont systemFontOfSize:15];
-        _placeholderLabel.center = self.collectionView.center;
-        [self.collectionView addSubview:_placeholderLabel];
-        _placeholderLabel.hidden = YES;
-    }
-    return _placeholderLabel;
 }
 
 - (instancetype)init
@@ -142,10 +122,6 @@ typedef void (^handler)(NSArray<UIImage *> *selectPhotos, NSArray<ZLSelectPhotoM
     self.previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
     [self.arraySelectPhotos removeAllObjects];
     [self.arraySelectPhotos addObjectsFromArray:lastSelectPhotoModels];
-    
-    if (!self.maxPreviewCount) {
-        self.verColHeight.constant = .0;
-    }
     
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
     [self addAssociatedOnSender];
@@ -443,11 +419,6 @@ static char RelatedKey;
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (_arrayDataSources.count == 0) {
-        self.placeholderLabel.hidden = NO;
-    } else {
-        self.placeholderLabel.hidden = YES;
-    }
     return self.maxPreviewCount>_arrayDataSources.count?_arrayDataSources.count:self.maxPreviewCount;
 }
 
